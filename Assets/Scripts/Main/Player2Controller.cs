@@ -15,7 +15,7 @@ namespace Main
         
         void Update()
         {
-            m_PlayerRigidBody.velocity = Vector3.zero;
+            
             if (Input.GetMouseButton(0))
             {
                 m_MousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -28,10 +28,12 @@ namespace Main
             if (gameObject.transform.position.y > 4)
             {
                 m_PlayerRigidBody.MovePosition(new Vector3(gameObject.transform.position.x, 4, -1));
+                m_PlayerRigidBody.velocity = Vector3.zero;
             }
             if (gameObject.transform.position.y < 0.3f)
             {
                 m_PlayerRigidBody.MovePosition(new Vector3(gameObject.transform.position.x, 0.3f, -1));
+                m_PlayerRigidBody.velocity = Vector3.zero;
             }
         }
     }
