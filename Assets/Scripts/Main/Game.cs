@@ -26,12 +26,16 @@ namespace Main
 
         private GameObject m_Washer;
         private Vector3 m_WasherPos = new Vector3(0, 0, -1);
+        private Rigidbody2D m_WasherRigidBody;
         
         private GameObject m_Player1;
         private Vector3 m_Player1Pos = new Vector3(0, -4, -1);
+        private Rigidbody2D m_Player1RigidBody;
         
         private GameObject m_Player2;
         private Vector3 m_Player2Pos = new Vector3(0, 4, -1);
+        private Rigidbody2D m_Player2RigidBody;
+        
         
 
         private void Awake()
@@ -56,6 +60,9 @@ namespace Main
 
         private void Start()
         {
+            m_WasherRigidBody = m_Washer.GetComponent<Rigidbody2D>();
+            m_Player1RigidBody = m_Player1.GetComponent<Rigidbody2D>();
+            m_Player2RigidBody = m_Player2.GetComponent<Rigidbody2D>();
             GetPoint1?.Invoke(m_Score1);
             GetPoint2?.Invoke(m_Score2);
         }
@@ -64,9 +71,8 @@ namespace Main
         {
             if (endRound)
             {
+                m_WasherRigidBody.velocity = Vector3.zero;
                 m_Washer.transform.position = m_WasherPos;
-                m_Player1.transform.position = m_Player1Pos;
-                m_Player2.transform.position = m_Player2Pos;
             }
         }
 

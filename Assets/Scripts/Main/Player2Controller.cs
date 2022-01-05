@@ -15,6 +15,7 @@ namespace Main
         
         void Update()
         {
+            m_PlayerRigidBody.velocity = Vector3.zero;
             if (Input.GetMouseButton(0))
             {
                 m_MousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
