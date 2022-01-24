@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Main
@@ -15,26 +13,15 @@ namespace Main
         
         void Update()
         {
-            
-            if (Input.GetMouseButton(0))
+            if (Game.Playing && Input.GetMouseButton(0))
             {
                 m_MousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                if (m_MousePos.y >= 0.3f && m_MousePos.y <= 4 && m_MousePos.x <= 2.5f && m_MousePos.x >= -2.5f)
+                if (m_MousePos.y >= 0.25f && m_MousePos.y <= 4.79f && m_MousePos.x <= 3.0f && m_MousePos.x >= -3.0f)
                 {
                     m_PlayerRigidBody.MovePosition(new Vector3(m_MousePos.x, m_MousePos.y, -1));
                 }
             }
-
-            if (gameObject.transform.position.y > 4)
-            {
-                m_PlayerRigidBody.MovePosition(new Vector3(gameObject.transform.position.x, 4, -1));
-                m_PlayerRigidBody.velocity = Vector3.zero;
-            }
-            if (gameObject.transform.position.y < 0.3f)
-            {
-                m_PlayerRigidBody.MovePosition(new Vector3(gameObject.transform.position.x, 0.3f, -1));
-                m_PlayerRigidBody.velocity = Vector3.zero;
-            }
+            m_PlayerRigidBody.velocity = Vector3.zero;
         }
     }
 }

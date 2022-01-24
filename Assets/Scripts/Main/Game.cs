@@ -1,19 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using UnityEngine;
 using System;
-using Random = UnityEngine.Random;
+
 
 namespace Main
 {
     public class Game : MonoBehaviour
     {
         public static event Action<bool> EndGame; 
-        public static event Action<bool> EndRound; 
-        public static event Action<bool> StartGame;
-        public static event Action<int> GetPoint1;
-        public static event Action<int> GetPoint2;
+        public static event Action<int> EndRound; 
+        public static event Action<float> ChangeCount; 
+        public static event Action<int> GetPoint;
 
         private static int m_Score1;
         public static int Score1 => m_Score1;
@@ -21,8 +18,12 @@ namespace Main
         private static int m_Score2;
         public static int Score2 => m_Score2;
 
-        private static bool m_IsEnd;
-        public static bool IsEnd => m_IsEnd;
+        private static bool m_Playing;
+        public static bool Playing => m_Playing;
+
+        private static bool m_GameOver;
+        public static bool GameOver => m_GameOver;
+
 
         private GameObject m_Washer;
         private Vector3 m_WasherPos = new Vector3(0, 0, -1);
@@ -30,22 +31,22 @@ namespace Main
         
         private GameObject m_Player1;
         private Vector3 m_Player1Pos = new Vector3(0, -4, -1);
-        private Rigidbody2D m_Player1RigidBody;
-        
+
         private GameObject m_Player2;
         private Vector3 m_Player2Pos = new Vector3(0, 4, -1);
-        private Rigidbody2D m_Player2RigidBody;
-        
-        
+
+
 
         private void Awake()
         {
-            m_IsEnd = false;
+            m_Score1 = 0;
+            m_Score2 = 0;
+            m_GameOver = false;
             m_Washer = Instantiate(GameAssets.GetInstance().Washer, m_WasherPos, Quaternion.identity);
             m_Player1 = Instantiate(GameAssets.GetInstance().Player1, m_Player1Pos, Quaternion.identity);
             m_Player2 = Instantiate(GameAssets.GetInstance().Player2, m_Player2Pos, Quaternion.identity);
-
             SceneManager.LoadScene("Scenes/UI", LoadSceneMode.Additive);
+            Pause();
         }
 
         private void OnEnable()
@@ -61,25 +62,47 @@ namespace Main
         private void Start()
         {
             m_WasherRigidBody = m_Washer.GetComponent<Rigidbody2D>();
-            m_Player1RigidBody = m_Player1.GetComponent<Rigidbody2D>();
-            m_Player2RigidBody = m_Player2.GetComponent<Rigidbody2D>();
-            GetPoint1?.Invoke(m_Score1);
-            GetPoint2?.Invoke(m_Score2);
+            ChangeCount?.Invoke(3.0f);
         }
 
-        private void NextRound(bool endRound)
+        public static void Resume()
         {
-            if (endRound)
+            m_Playing = true;
+        }
+
+        public static void Pause()
+        {
+            m_Playing = false;
+        }
+
+        private void NextRound(int player_win)
+        {
+            Pause();
+            m_WasherRigidBody.velocity = Vector3.zero;
+            if (player_win == 1)
             {
-                m_WasherRigidBody.velocity = Vector3.zero;
-                m_Washer.transform.position = m_WasherPos;
+                m_Washer.transform.position = m_WasherPos + Vector3.up;
+            }
+            else
+            {
+                m_Washer.transform.position = m_WasherPos + Vector3.down;
+            }
+            m_Player1.transform.position = m_Player1Pos;
+            m_Player2.transform.position = m_Player2Pos;
+            if (m_Score1 == 7 || m_Score2 == 7)
+            {
+                End();
+            }
+            else
+            {
+                ChangeCount?.Invoke(3.0f);
             }
         }
 
         private static void End()
         {
-            m_IsEnd = true;
-            Time.timeScale = 0f;
+            m_GameOver = true;
+            Pause();
             EndGame?.Invoke(true);
         }
 
@@ -88,21 +111,14 @@ namespace Main
             if (player == 1)
             {
                 m_Score1 += 1;
-                GetPoint1?.Invoke(m_Score1);
+                GetPoint?.Invoke(1);
+                EndRound?.Invoke(1);
             }
             else
             {
                 m_Score2 += 1;
-                GetPoint2?.Invoke(m_Score2);
-            }
-            EndRound?.Invoke(true);
-            if (m_Score1 == 7 || m_Score2 == 7)
-            {
-                End();
-            }
-            else
-            {
-                EndRound?.Invoke(true);
+                GetPoint?.Invoke(2);
+                EndRound?.Invoke(2);
             }
         }
     }
